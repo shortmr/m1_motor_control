@@ -118,7 +118,7 @@ public class ActualAngleControl : MonoBehaviour
                 } else {
                     counterList.Add(counter);
                     actualAngleList.Add(positionAngle_f);
-                    desiredAngleList.Add(angleVec[(int)trialIndex].y);
+                    desiredAngleList.Add((angleVec[(int)trialIndex].y - 2f)/(100f*gain)); // remove scaling for desired angle
                 }
             }
             transform.localPosition = new Vector3(angleVec[(int)trialIndex].x, 100f*gain*positionAngle_f+2f, 0.0f); // angle from -0.5 to 0.5

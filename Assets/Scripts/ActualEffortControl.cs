@@ -118,7 +118,7 @@ public class ActualEffortControl : MonoBehaviour
                 } else {
                     counterList.Add(counter);
                     actualEffortList.Add(positionEffort_f);
-                    desiredEffortList.Add(effortVec[(int)trialIndex].y);
+                    desiredEffortList.Add((effortVec[(int)trialIndex].y - 2f)/(100f*gain));
                 }
             }
             transform.localPosition = new Vector3(effortVec[(int)trialIndex].x, 100f*gain*positionEffort_f+2f, 0.0f);
