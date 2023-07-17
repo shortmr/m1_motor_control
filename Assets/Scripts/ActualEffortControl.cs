@@ -130,7 +130,10 @@ public class ActualEffortControl : MonoBehaviour
         float total_err = 0f; // compute total error for rmse
         float total_eff = 0f;
         float avg_eff = actualEffortList.Average();
-        var sb = new StringBuilder("Time,Desired,Actual");
+        float max_df = data.GetComponent<JointSubscriber>().tau_df;
+        float max_pf = data.GetComponent<JointSubscriber>().tau_pf;
+
+        var sb = new StringBuilder("Time,Desired,Actual,DF,PF");
         for (int i = 0; i < renderer.positionCount; i++)
         {
             float time = counterList[i];
@@ -142,7 +145,7 @@ public class ActualEffortControl : MonoBehaviour
             total_eff += Mathf.Pow(y-avg_eff, 2f);
             renderer.SetPosition(i, new Vector3(x, 100f*gain*y+2f, 0f));
 
-            sb.Append('\n').Append(time.ToString()).Append(',').Append(target.ToString()).Append(',').Append(y.ToString());
+            sb.Append('\n').Append(time.ToString()).Append(',').Append(target.ToString()).Append(',').Append(y.ToString()).Append(',').Append(max_df.ToString()).Append(',').Append(max_pf.ToString());
         }
         float rmse = Mathf.Sqrt(total_err/(float) renderer.positionCount);
         float sd = Mathf.Sqrt(total_eff/(float) renderer.positionCount); // TODO: filter out movement frequency (Lodha, 2022) or use SPARC
@@ -152,7 +155,7 @@ public class ActualEffortControl : MonoBehaviour
     }
 
 
-    public void SaveToCSV (string data)
+    public void SaveToCSV (string str)
     {
         // Specify target file path
         var folder = Application.persistentDataPath;
@@ -171,7 +174,7 @@ public class ActualEffortControl : MonoBehaviour
 
         using(var writer = new StreamWriter(filePath, false))
         {
-            writer.Write(data);
+            writer.Write(str);
         }
 
         Debug.Log($"CSV file written to \"{filePath}\"");
