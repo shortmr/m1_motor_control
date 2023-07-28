@@ -7,8 +7,10 @@ public class ForcePositionSwitch : MonoBehaviour
 {
     public GameObject forceControl;
     public GameObject positionControl;
-    public GameObject startTrial;
+    public GameObject actualEffortControl;
+    public GameObject actualAngleControl;
     public GameObject stageText;
+    public GameObject startTrial;
     public GameObject performanceDisplay;
 
     private string modeText;
@@ -21,7 +23,7 @@ public class ForcePositionSwitch : MonoBehaviour
     void Start()
     {
         // Set mode (1) to force control on startup
-        modeText = "Force Control";
+        modeText = "Force";
         forceControl.SetActive(true);
         positionControl.SetActive(false);
         mode = 1;
@@ -34,19 +36,21 @@ public class ForcePositionSwitch : MonoBehaviour
     public void Switch()
     {
         stageText.GetComponent<TextMeshProUGUI>().text = "0";
+        actualEffortControl.GetComponent<LineRenderer>().positionCount = 0;
+        actualAngleControl.GetComponent<LineRenderer>().positionCount = 0;
+
         feedbackText = performanceDisplay.GetComponentInChildren<TMP_Text>();
         feedbackText.text = "";
 
-        stageText.GetComponent<TextMeshProUGUI>().text = "0";
         if (mode == 2) {
             mode = 1;
-            modeText = "Force Control";
+            modeText = "Force";
             forceControl.SetActive(true);
             positionControl.SetActive(false);
         }
         else if (mode == 1)  {
             mode = 2;
-            modeText = "Position Control";
+            modeText = "Position";
             positionControl.SetActive(true);
             forceControl.SetActive(false);
         }

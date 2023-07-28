@@ -15,6 +15,7 @@ public class ActualEffortControl : MonoBehaviour
     public GameObject dataField;
     public GameObject stageText;
     public GameObject logText;
+    public string deviceLR;
 
     public float positionEffort_f;
     public GameObject desiredEffort;
@@ -22,7 +23,6 @@ public class ActualEffortControl : MonoBehaviour
     public bool begin;
     public int type;
 
-    private GameObject data;
     private TMP_Text feedbackText;
     private float gain;
     private float trialIndex = 0f;
@@ -43,7 +43,6 @@ public class ActualEffortControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        data = jointState;
         gain = settings.GetComponent<ControlSettings>().gain_e;
         trialDuration = settings.GetComponent<ControlSettings>().trialDuration;
         frameRate = settings.GetComponent<ControlSettings>().frameRate;
@@ -52,7 +51,7 @@ public class ActualEffortControl : MonoBehaviour
         ready = false;
         pass = false;
         begin = false;
-        type = 1;
+        type = 3;
         counter = 0f;
 
         effortVec = new Vector3[1];
@@ -85,8 +84,7 @@ public class ActualEffortControl : MonoBehaviour
     void Update()
     {
         // get filtered interaction torque from subscriber
-        positionEffort_f = data.GetComponent<JointSubscriber>().tau_s;
-
+        positionEffort_f = jointState.GetComponent<JointSubscriber>().tau_s;
         if (running) {
             if (ready) {
                 desiredEffortComponent = desiredEffort.GetComponent<LineRenderer>();
@@ -130,9 +128,10 @@ public class ActualEffortControl : MonoBehaviour
         float total_err = 0f; // compute total error for rmse
         float total_eff = 0f;
         float avg_eff = actualEffortList.Average();
-        float max_df = data.GetComponent<JointSubscriber>().tau_df;
-        float max_pf = data.GetComponent<JointSubscriber>().tau_pf;
+        float max_df = jointState.GetComponent<JointSubscriber>().tau_df;
+        float max_pf = jointState.GetComponent<JointSubscriber>().tau_pf;
 
+        // prepare csv string
         var sb = new StringBuilder("Time,Desired,Actual,DF,PF");
         for (int i = 0; i < renderer.positionCount; i++)
         {
@@ -148,9 +147,9 @@ public class ActualEffortControl : MonoBehaviour
             sb.Append('\n').Append(time.ToString()).Append(',').Append(target.ToString()).Append(',').Append(y.ToString()).Append(',').Append(max_df.ToString()).Append(',').Append(max_pf.ToString());
         }
         float rmse = Mathf.Sqrt(total_err/(float) renderer.positionCount);
-        float sd = Mathf.Sqrt(total_eff/(float) renderer.positionCount); // TODO: filter out movement frequency (Lodha, 2022) or use SPARC
+        float sd = Mathf.Sqrt(total_eff/(float) renderer.positionCount);
         // update text feedback
-        feedbackText.text = "Accuracy = " + rmse.ToString("0.00") + "\nSteadiness = " + sd.ToString("0.00"); // TODO: normalize score values to non-paretic limb
+        feedbackText.text = "Accuracy = " + rmse.ToString("0.00");// + "\nSteadiness = " + sd.ToString("0.00"); // TODO: normalize score values to non-paretic limb
         SaveToCSV(sb.ToString());
     }
 
@@ -170,7 +169,7 @@ public class ActualEffortControl : MonoBehaviour
         } else if (type == 3) {
             trialType = "dfpf";
         }
-        var filePath = Path.Combine(folder, dataText + "_force_" + trialType + "_" + trialNumber.ToString("00") + ".csv");
+        var filePath = Path.Combine(folder, dataText + "_" + deviceLR + "_force_" + trialType + "_" + trialNumber.ToString("00") + ".csv");
 
         using(var writer = new StreamWriter(filePath, false))
         {

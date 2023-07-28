@@ -33,7 +33,7 @@ public class DesiredEffortSine : MonoBehaviour
 
     void OnEnable() {
         if (startup) {
-            type = 1;
+            type = 3;
             primaryRenderer = GetComponent<LineRenderer>();
             startup = false;
         }

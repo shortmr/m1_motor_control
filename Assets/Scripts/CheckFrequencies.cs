@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class CheckSliders : MonoBehaviour
+public class CheckFrequencies : MonoBehaviour
 {
     public GameObject valueText;
     public bool primaryCheck;

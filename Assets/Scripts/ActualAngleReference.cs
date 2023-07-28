@@ -7,68 +7,70 @@ using System.Linq;
 using TMPro;
 using UnityEngine.UI; // Required when Using UI elements.
 
-public class ActualAngleControl : MonoBehaviour
+public class ActualAngleReference : MonoBehaviour
 {
     public GameObject settings;
     public GameObject jointState;
-    public GameObject performanceDisplay;
+    public GameObject jointStateMatch;
     public GameObject dataField;
     public GameObject stageText;
     public GameObject logText;
+    public GameObject controlStartButton;
     public string deviceLR;
+    public bool pareticDevice;
 
     public float positionAngle_f;
+    public float positionAngle_f_m;
     public GameObject desiredAngle;
     public bool ready;
     public bool begin;
-    public int type;
 
-    private TMP_Text feedbackText;
+    public float referencePoint;
+    public int trigger;
+
+    public float max_df;
+    public float max_pf;
+    public float max_df_m;
+    public float max_pf_m;
+
     private float gain;
     private float trialIndex = 0f;
     private List<float> counterList = new List<float>();
+    private List<float> triggerList = new List<float>();
     private List<float> actualAngleList = new List<float>();
+    private List<float> actualAngleMatchList = new List<float>();
     private List<float> desiredAngleList = new List<float>();
-    private int screenWidth = 25;
 
     private bool pass;
 
     private float trialDuration;
+    private float referenceDuration;
     private bool running;
     private float counter;
-    private LineRenderer desiredAngleComponent;
-    private Vector3[] angleVec;
     private float frameRate;
 
     // Start is called before the first frame update
     void Start()
     {
         gain = settings.GetComponent<ControlSettings>().gain_a;
-        trialDuration = settings.GetComponent<ControlSettings>().trialDuration;
+        referenceDuration = settings.GetComponent<ControlSettings>().referenceDuration;
         frameRate = settings.GetComponent<ControlSettings>().frameRate;
 
         running = true;
         ready = false;
         pass = false;
         begin = false;
-        type = 3;
         counter = 0f;
+        trigger = 0;
 
-        angleVec = new Vector3[1];
-        angleVec[0] = new Vector3(0f,0f,0f);
-
-        feedbackText = performanceDisplay.GetComponentInChildren<TMP_Text>();
-        feedbackText.text = "";
-
-        desiredAngleComponent = desiredAngle.GetComponent<LineRenderer>();
-        angleVec = new Vector3[desiredAngleComponent.positionCount];
-        desiredAngleComponent.GetPositions(angleVec);
         ready = false;
         pass = true;
         counter = 0f;
-        trialIndex = (float) desiredAngleComponent.positionCount * counter/trialDuration;
+        trialIndex = counter/referenceDuration;
         counterList.Clear();
+        triggerList.Clear();
         actualAngleList.Clear();
+        actualAngleMatchList.Clear();
         desiredAngleList.Clear();
     }
 
@@ -85,71 +87,77 @@ public class ActualAngleControl : MonoBehaviour
     {
         // get filtered position from subscriber
         positionAngle_f = jointState.GetComponent<JointSubscriber>().q;
+        positionAngle_f_m = jointStateMatch.GetComponent<JointSubscriber>().q;
+
+        float pA = positionAngle_f;
+        float pA_m = positionAngle_f_m;
+
+        // rescale based on paretic limb
+        if (pareticDevice) {
+            pA_m = 0.5f*positionAngle_f_m*(max_df_m - max_pf_m)+0.5f*(max_df_m + max_pf_m);
+            pA_m = 2f*(pA_m - 0.5f*(max_df + max_pf))/(max_df - max_pf);
+        }
+        else {
+            pA = 0.5f*positionAngle_f*(max_df - max_pf)+0.5f*(max_df + max_pf);
+            pA = 2f*(pA - 0.5f*(max_df_m + max_pf_m))/(max_df_m - max_pf_m);
+        }
+
         if (running) {
             if (ready) {
-                desiredAngleComponent = desiredAngle.GetComponent<LineRenderer>();
-                angleVec = new Vector3[desiredAngleComponent.positionCount];
-                desiredAngleComponent.GetPositions(angleVec);
                 ready = false;
                 pass = true;
                 counter = 0f;
-                trialIndex = (float) desiredAngleComponent.positionCount * counter/trialDuration;
+                trialIndex = counter/referenceDuration;
                 counterList.Clear();
+                triggerList.Clear();
                 actualAngleList.Clear();
+                actualAngleMatchList.Clear();
                 desiredAngleList.Clear();
             }
             if (pass & begin) {
-                GetComponent<LineRenderer>().positionCount = 0;
                 counter += Time.deltaTime; //1f/(float) Application.targetFrameRate;
-                trialIndex = (float) desiredAngleComponent.positionCount * counter/trialDuration;
+                trialIndex = counter/referenceDuration;
 
-                if ((int) trialIndex >= desiredAngleComponent.positionCount-1) {
+                if (trialIndex > 1f) {
                     ready = true;
                     pass = false;
                     begin = false;
+                    controlStartButton.GetComponent<StartControlTrial>().StartTrial();
                     trialIndex = 0f;
-                    DrawFeedback(GetComponent<LineRenderer>());
+                    WriteFeedback();
                     int stageCount;
                     int.TryParse(stageText.GetComponent<TextMeshProUGUI>().text, out stageCount);
                     stageCount += 1;
                     stageText.GetComponent<TextMeshProUGUI>().text = stageCount.ToString();
                 } else {
                     counterList.Add(counter);
-                    actualAngleList.Add(positionAngle_f);
-                    desiredAngleList.Add((angleVec[(int)trialIndex].y - 2f)/(100f*gain)); // remove scaling for desired angle
+                    triggerList.Add(trigger);
+                    actualAngleList.Add(pA);
+                    actualAngleMatchList.Add(pA_m);
+                    desiredAngleList.Add(referencePoint/100f);
                 }
             }
-            transform.localPosition = new Vector3(angleVec[(int)trialIndex].x, 100f*gain*positionAngle_f+2f, 0.0f); // angle from -0.5 to 0.5
+            transform.localPosition = new Vector3(0f, 100f*gain*pA+2f, 0.0f); // angle from -1 to 1
         }
     }
 
-    public void DrawFeedback(LineRenderer renderer) {
-        renderer.positionCount = (int) (actualAngleList.Count);
-        float total_err = 0f; // compute total error for rmse
-        float total_ang = 0f;
+    public void WriteFeedback() {
+        int positionCount = (int) (actualAngleList.Count);
         float avg_ang = actualAngleList.Average();
-        float max_df = jointState.GetComponent<JointSubscriber>().q_df;
-        float max_pf = jointState.GetComponent<JointSubscriber>().q_pf;
 
         // prepare csv string
-        var sb = new StringBuilder("Time,Desired,Actual,DF,PF");
-        for (int i = 0; i < renderer.positionCount; i++)
+        var sb = new StringBuilder("Time,Desired,Actual,DF,PF,ActualM,DFM,PFM,Trigger");
+
+        for (int i = 0; i < positionCount; i++)
         {
             float time = counterList[i];
-            float x = screenWidth * ((float) i / (float) renderer.positionCount - 0.5f);
             float y = actualAngleList[i];
             float target = desiredAngleList[i];
-
-            total_err += Mathf.Pow(y-target, 2f);
-            total_ang += Mathf.Pow(y-avg_ang, 2f);
-            renderer.SetPosition(i, new Vector3(x, 100f*gain*y+2f, 0f));
-
-            sb.Append('\n').Append(time.ToString()).Append(',').Append(target.ToString()).Append(',').Append(y.ToString()).Append(',').Append(max_df.ToString()).Append(',').Append(max_pf.ToString());
+            float trig = triggerList[i];
+            float ym = actualAngleMatchList[i];
+            sb.Append('\n').Append(time.ToString()).Append(',').Append(target.ToString()).Append(',').Append(y.ToString()).Append(',').Append(max_df.ToString()).Append(',').Append(max_pf.ToString()).Append(',').Append(ym.ToString()).Append(',').Append(max_df_m.ToString()).Append(',').Append(max_pf_m.ToString()).Append(',').Append(trig.ToString());
         }
-        float rmse = Mathf.Sqrt(total_err/(float) renderer.positionCount);
-        float sd = Mathf.Sqrt(total_ang/(float) renderer.positionCount);
-        // update text feedback
-        feedbackText.text = "Accuracy = " + rmse.ToString("0.00"); // + "\nSteadiness = " + sd.ToString("0.00");
+
         SaveToCSV(sb.ToString());
     }
 
@@ -161,15 +169,7 @@ public class ActualAngleControl : MonoBehaviour
         int trialNumber;
         int.TryParse(stageText.GetComponent<TextMeshProUGUI>().text, out trialNumber);
         string dataText = dataField.GetComponent<InputField>().text;
-        string trialType = "";
-        if (type == 1) {
-            trialType = "df";
-        } else if (type == 2) {
-            trialType = "pf";
-        } else if (type == 3) {
-            trialType = "dfpf";
-        }
-        var filePath = Path.Combine(folder, dataText + "_" + deviceLR + "_position_" + trialType + "_" + trialNumber.ToString("00") + ".csv");
+        var filePath = Path.Combine(folder, dataText + "_" + deviceLR + "_position_match_" + trialNumber.ToString("00") + ".csv");
 
         using(var writer = new StreamWriter(filePath, false))
         {

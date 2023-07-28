@@ -6,7 +6,7 @@ using JointScaled = RosMessageTypes.CORC.JointScaled32Msg;
 
 public class JointSubscriber : MonoBehaviour
 {
-    public GameObject settings;
+    public string m1_device;
     public string topic;
     public float tau_s;
     public float q;
@@ -15,11 +15,8 @@ public class JointSubscriber : MonoBehaviour
     public float q_df;
     public float q_pf;
 
-    private string m1;
-
     void Start() {
-        m1 = settings.GetComponent<ControlSettings>().m1;
-        ROSConnection.GetOrCreateInstance().Subscribe<JointScaled>(m1 + "/" + topic + "/", StreamData);
+        ROSConnection.GetOrCreateInstance().Subscribe<JointScaled>(m1_device + "/" + topic + "/", StreamData);
     }
 
     void StreamData(JointScaled d) {

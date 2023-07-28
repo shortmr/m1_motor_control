@@ -6,29 +6,32 @@ using TMPro;
 public class ChangeDirection : MonoBehaviour
 {
     public GameObject desiredEffortSine;
-    public GameObject actualEffortControl;
     public GameObject desiredAngleSine;
+    public GameObject actualEffortControl;
     public GameObject actualAngleControl;
+    public GameObject stageText;
     public GameObject trialCombined;
     public GameObject trial;
+    public GameObject performanceDisplay;
     public int direction;
 
     private string directionText;
     private TMP_Text text;
     private float angleUp = 0f;
     private float angleDown = 180f;
+    private TMP_Text feedbackText;
 
     // Start is called before the first frame update
     void Start()
     {
         // Set direction to dorsiflexion on start up (up: 1, down: 2, combined: 3)
-        direction = 1;
-        directionText = "DF";
+        direction = 3;
+        directionText = "DF/PF";
 
         text = GetComponentInChildren<TMP_Text>();
         text.text = directionText;
 
-        trialCombined.SetActive(false);
+        trialCombined.SetActive(true);
     }
 
     public void Flip()
@@ -72,6 +75,14 @@ public class ChangeDirection : MonoBehaviour
             trial.GetComponent<Transform>().localRotation = Quaternion.Euler(new Vector3(0f,0f,angleUp));
             trialCombined.SetActive(true);
         }
+
+        stageText.GetComponent<TextMeshProUGUI>().text = "0";
+        actualEffortControl.GetComponent<LineRenderer>().positionCount = 0;
+        actualAngleControl.GetComponent<LineRenderer>().positionCount = 0;
+
+        feedbackText = performanceDisplay.GetComponentInChildren<TMP_Text>();
+        feedbackText.text = "";
+
         text = GetComponentInChildren<TMP_Text>();
         text.text = directionText;
     }
