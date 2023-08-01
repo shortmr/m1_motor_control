@@ -15,6 +15,8 @@ public class ChangeDevice: MonoBehaviour
     public GameObject stageText;
     public GameObject m1Text;
     public GameObject performanceDisplay;
+    public GameObject powerSlider;
+    public GameObject speedSlider;
     public int device = 1;
 
     private string deviceText;
@@ -46,6 +48,11 @@ public class ChangeDevice: MonoBehaviour
         actualAngleReference.GetComponent<ActualAngleReference>().max_pf = JointStatesR.GetComponent<JointSubscriber>().q_pf;
         actualAngleReference.GetComponent<ActualAngleReference>().max_df_m = JointStatesL.GetComponent<JointSubscriber>().q_df;
         actualAngleReference.GetComponent<ActualAngleReference>().max_pf_m = JointStatesL.GetComponent<JointSubscriber>().q_pf;
+
+        powerSlider.GetComponent<CheckNormalized>().max_pf = JointStatesR.GetComponent<JointSubscriber>().tau_pf;
+        powerSlider.GetComponent<CheckNormalized>().max_df = JointStatesR.GetComponent<JointSubscriber>().tau_df;
+        speedSlider.GetComponent<CheckNormalized>().max_pf = JointStatesR.GetComponent<JointSubscriber>().q_pf;
+        speedSlider.GetComponent<CheckNormalized>().max_df = JointStatesR.GetComponent<JointSubscriber>().q_df;
 
         // Check if paretic limb matches device
         if (pareticButton.GetComponent<ChangeParetic>().paretic == device) {
@@ -91,6 +98,11 @@ public class ChangeDevice: MonoBehaviour
             actualAngleReference.GetComponent<ActualAngleReference>().max_pf = JointStatesR.GetComponent<JointSubscriber>().q_pf;
             actualAngleReference.GetComponent<ActualAngleReference>().max_df_m = JointStatesL.GetComponent<JointSubscriber>().q_df;
             actualAngleReference.GetComponent<ActualAngleReference>().max_pf_m = JointStatesL.GetComponent<JointSubscriber>().q_pf;
+
+            powerSlider.GetComponent<CheckNormalized>().max_pf = JointStatesR.GetComponent<JointSubscriber>().tau_pf;
+            powerSlider.GetComponent<CheckNormalized>().max_df = JointStatesR.GetComponent<JointSubscriber>().tau_df;
+            speedSlider.GetComponent<CheckNormalized>().max_pf = JointStatesR.GetComponent<JointSubscriber>().q_pf;
+            speedSlider.GetComponent<CheckNormalized>().max_df = JointStatesR.GetComponent<JointSubscriber>().q_df;
         }
         else if (device == 2) {
             deviceText = JointStatesL.GetComponent<JointSubscriber>().m1_device;
@@ -114,7 +126,14 @@ public class ChangeDevice: MonoBehaviour
             actualAngleReference.GetComponent<ActualAngleReference>().max_pf = JointStatesL.GetComponent<JointSubscriber>().q_pf;
             actualAngleReference.GetComponent<ActualAngleReference>().max_df_m = JointStatesR.GetComponent<JointSubscriber>().q_df;
             actualAngleReference.GetComponent<ActualAngleReference>().max_pf_m = JointStatesR.GetComponent<JointSubscriber>().q_pf;
+
+            powerSlider.GetComponent<CheckNormalized>().max_pf = JointStatesL.GetComponent<JointSubscriber>().tau_pf;
+            powerSlider.GetComponent<CheckNormalized>().max_df = JointStatesL.GetComponent<JointSubscriber>().tau_df;
+            speedSlider.GetComponent<CheckNormalized>().max_pf = JointStatesL.GetComponent<JointSubscriber>().q_pf;
+            speedSlider.GetComponent<CheckNormalized>().max_df = JointStatesL.GetComponent<JointSubscriber>().q_df;
         }
+        powerSlider.GetComponent<CheckNormalized>().ChangeFrequency();
+        speedSlider.GetComponent<CheckNormalized>().ChangeFrequency();
 
         stageText.GetComponent<TextMeshProUGUI>().text = "0";
         actualEffortControl.GetComponent<LineRenderer>().positionCount = 0;

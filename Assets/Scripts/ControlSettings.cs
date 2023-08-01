@@ -16,7 +16,9 @@ public class ControlSettings : MonoBehaviour
     public float romOffsetCombined; // % ROM (bi-directional DF and PF)
     public float primaryFrequency; // Hz
     public float secondaryFrequency; // Hz
-    public float referencePoint; // % ROM/MVC
+    public float normalizedEffortFrequency; // Hz based on Nm/s
+    public float normalizedAngleFrequency; // Hz based on deg/s
+    public float referencePoint; // % MVC or % ROM
     public float trialDuration; // seconds (tracking trials)
     public float referenceDuration; // seconds (proprioception trials)
     public float gain_e; // scale factor for torque

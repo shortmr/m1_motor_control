@@ -14,7 +14,7 @@ public class CheckFrequencies : MonoBehaviour
 
     private Slider frequencySlider;
     private float t_;
-    private float maxAmount = 0.2f;
+    private float maxAmount = 0.3f;
     private int numberOfSteps = 0;
     private float stepAmount = 0.05f;
     private string displayText;
@@ -41,6 +41,9 @@ public class CheckFrequencies : MonoBehaviour
         int ceil = Mathf.CeilToInt(range);
         if (ceil == 3) {
             ceil = 2; // 0.15 Hz not implemented
+        }
+        if (ceil == 5) {
+            ceil = 4; // 0.25 Hz not implemented
         }
         frequencySlider.value = ceil * stepAmount;
         displayText = frequencySlider.value.ToString("0.00");

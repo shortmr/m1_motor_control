@@ -12,6 +12,9 @@ public class ForcePositionSwitch : MonoBehaviour
     public GameObject stageText;
     public GameObject startTrial;
     public GameObject performanceDisplay;
+    public GameObject matchUnitText;
+    public GameObject powerSlider;
+    public GameObject speedSlider;
 
     private string modeText;
     private TMP_Text text;
@@ -31,6 +34,9 @@ public class ForcePositionSwitch : MonoBehaviour
         startTrial.GetComponent<StartControlTrial>().mode = mode;
         text = GetComponentInChildren<TMP_Text>();
         text.text = modeText;
+        matchUnitText.GetComponent<TextMeshProUGUI>().text = "% MVC";
+        powerSlider.SetActive(true);
+        speedSlider.SetActive(false);
     }
 
     public void Switch()
@@ -44,15 +50,25 @@ public class ForcePositionSwitch : MonoBehaviour
 
         if (mode == 2) {
             mode = 1;
+        } else if (mode == 1)  {
+            mode = 2;
+        }
+
+        if (mode == 1) {
             modeText = "Force";
             forceControl.SetActive(true);
             positionControl.SetActive(false);
+            matchUnitText.GetComponent<TextMeshProUGUI>().text = "% MVC";
+            powerSlider.SetActive(true);
+            speedSlider.SetActive(false);
         }
-        else if (mode == 1)  {
-            mode = 2;
+        else if (mode == 2)  {
             modeText = "Position";
             positionControl.SetActive(true);
             forceControl.SetActive(false);
+            matchUnitText.GetComponent<TextMeshProUGUI>().text = "% ROM";
+            powerSlider.SetActive(false);
+            speedSlider.SetActive(true);
         }
         startTrial.GetComponent<StartControlTrial>().mode = mode;
         text = GetComponentInChildren<TMP_Text>();
