@@ -25,18 +25,26 @@ public class TriggerControl : MonoBehaviour
         GetComponent<Button>().interactable = true;
     }
 
-    public void SendTrigger()
+    public void SendTrigger(bool reset)
     {
-        if (trigger == 0) {
-            trigger = 1;
-            triggerText = "...";
-            GetComponent<Button>().interactable = false;
-        }
-        else if (trigger == 1)  {
+        if (reset) {
             trigger = 0;
             triggerText = "Trigger";
             GetComponent<Button>().interactable = true;
         }
+        else {
+            if (trigger == 0) {
+                trigger = 1;
+                triggerText = "...";
+                GetComponent<Button>().interactable = false;
+            }
+            else if (trigger == 1)  {
+                trigger = 0;
+                triggerText = "Trigger";
+                GetComponent<Button>().interactable = true;
+            }
+        }
+
         actualEffortReference.GetComponent<ActualEffortReference>().trigger = trigger;
         actualAngleReference.GetComponent<ActualAngleReference>().trigger = trigger;
         text = GetComponentInChildren<TMP_Text>();

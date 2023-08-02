@@ -93,7 +93,7 @@ public class StartControlTrial : MonoBehaviour
                     zeroAngleLine.SetActive(true);
                     referenceAngleLine.SetActive(false);
                 }
-                controlTriggerButton.GetComponent<TriggerControl>().SendTrigger();
+                controlTriggerButton.GetComponent<TriggerControl>().SendTrigger(true);
                 controlTriggerButton.SetActive(false);
             }
         }

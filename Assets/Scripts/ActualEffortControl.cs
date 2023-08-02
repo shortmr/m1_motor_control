@@ -146,10 +146,10 @@ public class ActualEffortControl : MonoBehaviour
 
             sb.Append('\n').Append(time.ToString()).Append(',').Append(target.ToString()).Append(',').Append(y.ToString()).Append(',').Append(max_df.ToString()).Append(',').Append(max_pf.ToString());
         }
-        float rmse = Mathf.Sqrt(total_err/(float) renderer.positionCount);
+        float rmse = 100f*Mathf.Sqrt(total_err/(float) renderer.positionCount);
         float sd = Mathf.Sqrt(total_eff/(float) renderer.positionCount);
         // update text feedback
-        feedbackText.text = "Accuracy = " + rmse.ToString("0.00");// + "\nSteadiness = " + sd.ToString("0.00"); // TODO: normalize score values to non-paretic limb
+        feedbackText.text = "Error = " + rmse.ToString("0.0") + "%";
         SaveToCSV(sb.ToString());
     }
 

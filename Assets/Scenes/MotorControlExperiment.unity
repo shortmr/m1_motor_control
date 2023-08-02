@@ -327,7 +327,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Enter value (Nm)...
+  m_Text: Enter subject identifier...
 --- !u!222 &3142563
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2217,15 +2217,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2867,6 +2867,10 @@ PrefabInstance:
     - target: {fileID: 75684011707699978, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_Name
       value: Sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 75684011707699978, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699979, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_Enabled
@@ -5912,7 +5916,7 @@ MonoBehaviour:
       - m_Target: {fileID: 1241945452}
         m_TargetAssemblyTypeName: TriggerControl, Assembly-CSharp
         m_MethodName: SendTrigger
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -6907,6 +6911,10 @@ PrefabInstance:
     - target: {fileID: 75684011707699978, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_Name
       value: Sphere
+      objectReference: {fileID: 0}
+    - target: {fileID: 75684011707699978, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699979, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_Enabled
@@ -9719,15 +9727,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.5
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 75684011707699982, guid: 6f5d29511f72c3048bc2965fccb80bb6, type: 3}
       propertyPath: m_LocalPosition.x
